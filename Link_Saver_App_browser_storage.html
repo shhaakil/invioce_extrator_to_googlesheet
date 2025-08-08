@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link Saver App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            background-attachment: fixed;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 2;
+        }
+        
+        h1 {
+            color: white;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 400;
+            font-size: 1.1rem;
+        }
+        
+        .links-container {
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .no-links {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-style: italic;
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .no-links i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        .link-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px 25px;
+            margin-bottom: 15px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 4px solid #667eea;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .link-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            border-left-color: #764ba2;
+        }
+        
+        .link-info {
+            flex: 1;
+            padding-right: 20px;
+        }
+        
+        .link-name {
+            font-weight: 600;
+            color: white;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .link-description {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .link-actions {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.7);
+            transition: color 0.3s ease;
+            z-index: 10;
+        }
+        
+        .link-actions:hover {
+            color: white;
+        }
+        
+        .link-actions i {
+            font-size: 1.2rem;
+        }
+        
+        .action-menu {
+            position: fixed;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            min-width: 180px;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+        
+        .action-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .action-item {
+            padding: 12px 20px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .action-item:last-child {
+            border-bottom: none;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+        
+        .action-item:first-child {
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        
+        .action-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .action-item.edit {
+            color: #4facfe;
+        }
+        
+        .action-item.view {
+            color: #f093fb;
+        }
+        
+        .action-item.delete {
+            color: #f5576c;
+        }
+        
+        .visit-btn {
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .visit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(240, 147, 251, 0.6);
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .visit-btn i {
+            font-size: 0.9rem;
+        }
+        
+        .add-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(79, 172, 254, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            animation: pulse 2s infinite;
+        }
+        
+        .add-btn:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 15px 30px rgba(79, 172, 254, 0.6);
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(79, 172, 254, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(79, 172, 254, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(79, 172, 254, 0);
+            }
+        }
+        
+        .form-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        
+        .form-container.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .form {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            transform: translateY(30px);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .form-container.active .form {
+            transform: translateY(0);
+        }
+        
+        .form h2 {
+            color: white;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .form-group input, 
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.7);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .btn-save {
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+        
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.6);
+        }
+        
+        /* Animation for new links */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .link-card {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        /* View modal */
+        .view-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 300;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .view-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .view-content {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            transform: translateY(30px);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .view-modal.active .view-content {
+            transform: translateY(0);
+        }
+        
+        .view-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .view-header h3 {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .view-close {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .view-close:hover {
+            color: white;
+        }
+        
+        .view-body {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .view-body h4 {
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+        
+        .view-body p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .view-footer {
+            margin-top: 25px;
+            text-align: center;
+        }
+        
+        .view-link {
+            color: #4facfe;
+            text-decoration: underline;
+            word-break: break-all;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .add-btn {
+                width: 60px;
+                height: 60px;
+                bottom: 20px;
+                right: 20px;
+                font-size: 24px;
+            }
+            
+            .form {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .action-menu {
+                min-width: 160px;
+            }
+            
+            .action-item {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .header {
+                border-radius: 15px;
+                padding: 15px;
+            }
+            
+            .link-card {
+                padding: 18px 20px;
+            }
+            
+            .link-name {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-link"></i> Link Saver</h1>
+            <p class="subtitle">Save and organize your favorite websites</p>
+        </div>
+        
+        <div class="links-container" id="linksContainer">
+            <!-- Links will be added here dynamically -->
+            <div class="no-links" id="noLinksMessage">
+                <i class="fas fa-folder-open"></i>
+                <p>You have no saved links</p>
+                <p>Add your first link by clicking the + button</p>
+            </div>
+        </div>
+    </div>
+    
+    <button class="add-btn" id="addBtn">
+        <i class="fas fa-plus"></i>
+    </button>
+    
+    <div class="form-container" id="formContainer">
+        <div class="form">
+            <h2><i class="fas fa-plus-circle"></i> Add New Link</h2>
+            <input type="hidden" id="editId">
+            <div class="form-group">
+                <label for="linkName"><i class="fas fa-tag"></i> Name</label>
+                <input type="text" id="linkName" placeholder="Enter link name" required>
+            </div>
+            <div class="form-group">
+                <label for="linkDescription"><i class="fas fa-align-left"></i> Description</label>
+                <textarea id="linkDescription" placeholder="Enter link description"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="linkUrl"><i class="fas fa-globe"></i> Link URL</label>
+                <input type="url" id="linkUrl" placeholder="https://example.com" required>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-cancel" id="cancelBtn">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button class="btn btn-save" id="saveBtn">
+                    <i class="fas fa-save"></i> <span id="saveBtnText">Save Link</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="view-modal" id="viewModal">
+        <div class="view-content">
+            <div class="view-header">
+                <h3><i class="fas fa-eye"></i> View Link Details</h3>
+                <button class="view-close" id="viewClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="view-body">
+                <h4>Name:</h4>
+                <p id="viewName"></p>
+                <h4>Description:</h4>
+                <p id="viewDescription"></p>
+                <h4>Link:</h4>
+                <p><a href="#" id="viewLink" class="view-link" target="_blank"></a></p>
+            </div>
+            <div class="view-footer">
+                <button class="btn btn-save" id="visitFromView">Visit Link</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="action-menu" id="actionMenu"></div>
+    
+    <script>
+        // DOM elements
+        const linksContainer = document.getElementById('linksContainer');
+        const noLinksMessage = document.getElementById('noLinksMessage');
+        const addBtn = document.getElementById('addBtn');
+        const formContainer = document.getElementById('formContainer');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const saveBtnText = document.getElementById('saveBtnText');
+        const linkName = document.getElementById('linkName');
+        const linkDescription = document.getElementById('linkDescription');
+        const linkUrl = document.getElementById('linkUrl');
+        const editId = document.getElementById('editId');
+        const viewModal = document.getElementById('viewModal');
+        const viewClose = document.getElementById('viewClose');
+        const viewName = document.getElementById('viewName');
+        const viewDescription = document.getElementById('viewDescription');
+        const viewLink = document.getElementById('viewLink');
+        const visitFromView = document.getElementById('visitFromView');
+        const actionMenu = document.getElementById('actionMenu');
+        
+        // Current link being acted upon
+        let currentLink = null;
+        
+        // Load saved links from localStorage
+        let savedLinks = JSON.parse(localStorage.getItem('savedLinks')) || [];
+        
+        // Display links on page load
+        displayLinks();
+        
+        // Event listeners
+        addBtn.addEventListener('click', () => {
+            // Reset form to add mode
+            formContainer.classList.add('active');
+            editId.value = '';
+            saveBtnText.textContent = 'Save Link';
+            document.querySelector('.form h2').innerHTML = '<i class="fas fa-plus-circle"></i> Add New Link';
+            
+            // Clear form fields
+            linkName.value = '';
+            linkDescription.value = '';
+            linkUrl.value = '';
+            
+            // Focus on name field
+            linkName.focus();
+        });
+        
+        cancelBtn.addEventListener('click', () => {
+            formContainer.classList.remove('active');
+            editId.value = '';
+            saveBtnText.textContent = 'Save Link';
+            document.querySelector('.form h2').innerHTML = '<i class="fas fa-plus-circle"></i> Add New Link';
+        });
+        
+        saveBtn.addEventListener('click', saveLink);
+        
+        viewClose.addEventListener('click', () => {
+            viewModal.classList.remove('active');
+        });
+        
+        visitFromView.addEventListener('click', () => {
+            window.open(viewLink.href, '_blank');
+            viewModal.classList.remove('active');
+        });
+        
+        // Close form when clicking outside
+        formContainer.addEventListener('click', (e) => {
+            if (e.target === formContainer) {
+                formContainer.classList.remove('active');
+                editId.value = '';
+                saveBtnText.textContent = 'Save Link';
+                document.querySelector('.form h2').innerHTML = '<i class="fas fa-plus-circle"></i> Add New Link';
+            }
+        });
+        
+        // Close view modal when clicking outside
+        viewModal.addEventListener('click', (e) => {
+            if (e.target === viewModal) {
+                viewModal.classList.remove('active');
+            }
+        });
+        
+        // Close action menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!actionMenu.contains(e.target) && !e.target.closest('.link-actions')) {
+                actionMenu.classList.remove('active');
+                currentLink = null;
+            }
+        });
+        
+        // Handle Enter key in form
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                formContainer.classList.remove('active');
+                viewModal.classList.remove('active');
+                actionMenu.classList.remove('active');
+                editId.value = '';
+                saveBtnText.textContent = 'Save Link';
+                document.querySelector('.form h2').innerHTML = '<i class="fas fa-plus-circle"></i> Add New Link';
+                currentLink = null;
+            }
+            
+            if (e.key === 'Enter' && formContainer.classList.contains('active')) {
+                if (e.target === linkName || e.target === linkDescription || e.target === linkUrl) {
+                    // Only save when Enter is pressed in the URL field or if all required fields are filled
+                    if (e.target === linkUrl || (linkName.value.trim() && linkUrl.value.trim())) {
+                        saveLink();
+                    }
+                }
+            }
+        });
+        
+        // Save link function
+        function saveLink() {
+            const name = linkName.value.trim();
+            const description = linkDescription.value.trim();
+            const url = linkUrl.value.trim();
+            const isEditing = editId.value !== '';
+            
+            // Validate inputs
+            if (!name || !url) {
+                alert('Please fill in at least the name and link fields');
+                return;
+            }
+            
+            // Validate URL format
+            try {
+                new URL(url);
+            } catch (e) {
+                alert('Please enter a valid URL (include http:// or https://)');
+                return;
+            }
+            
+            if (isEditing) {
+                // Edit existing link
+                const index = savedLinks.findIndex(link => link.id == editId.value);
+                if (index !== -1) {
+                    savedLinks[index] = {
+                        id: parseInt(editId.value),
+                        name,
+                        description,
+                        url
+                    };
+                }
+            } else {
+                // Create new link object
+                const newLink = {
+                    id: Date.now(),
+                    name,
+                    description,
+                    url
+                };
+                
+                // Add to saved links array
+                savedLinks.push(newLink);
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('savedLinks', JSON.stringify(savedLinks));
+            
+            // Update display
+            displayLinks();
+            
+            // Close form
+            formContainer.classList.remove('active');
+            editId.value = '';
+            saveBtnText.textContent = 'Save Link';
+            document.querySelector('.form h2').innerHTML = '<i class="fas fa-plus-circle"></i> Add New Link';
+            
+            // Show success feedback
+            showSuccessMessage(isEditing ? 'Link updated successfully!' : 'Link saved successfully!');
+        }
+        
+        // Display links function
+        function displayLinks() {
+            // Clear current links (except the no links message)
+            const linkCards = document.querySelectorAll('.link-card');
+            linkCards.forEach(card => card.remove());
+            
+            // Show or hide no links message
+            if (savedLinks.length === 0) {
+                noLinksMessage.style.display = 'block';
+            } else {
+                noLinksMessage.style.display = 'none';
+                
+                // Add each link to the container
+                savedLinks.forEach(link => {
+                    const linkCard = document.createElement('div');
+                    linkCard.className = 'link-card';
+                    linkCard.dataset.id = link.id;
+                    
+                    const linkInfo = document.createElement('div');
+                    linkInfo.className = 'link-info';
+                    
+                    const linkNameEl = document.createElement('div');
+                    linkNameEl.className = 'link-name';
+                    linkNameEl.textContent = link.name;
+                    
+                    const linkDescriptionEl = document.createElement('div');
+                    linkDescriptionEl.className = 'link-description';
+                    linkDescriptionEl.textContent = link.description || 'No description provided';
+                    
+                    linkInfo.appendChild(linkNameEl);
+                    linkInfo.appendChild(linkDescriptionEl);
+                    
+                    // Three dots menu
+                    const linkActions = document.createElement('div');
+                    linkActions.className = 'link-actions';
+                    linkActions.innerHTML = '<i class="fas fa-ellipsis-v"></i>';
+                    linkActions.dataset.id = link.id;
+                    
+                    // Toggle action menu
+                    linkActions.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        currentLink = link;
+                        
+                        // Position the menu
+                        const rect = linkActions.getBoundingClientRect();
+                        actionMenu.style.top = `${rect.bottom + window.scrollY}px`;
+                        actionMenu.style.right = `${window.innerWidth - rect.right}px`;
+                        
+                        // Clear previous menu items
+                        actionMenu.innerHTML = '';
+                        
+                        // Create menu items
+                        const editItem = document.createElement('div');
+                        editItem.className = 'action-item edit';
+                        editItem.innerHTML = '<i class="fas fa-edit"></i> Edit';
+                        editItem.addEventListener('click', () => {
+                            editLink(link);
+                            actionMenu.classList.remove('active');
+                            currentLink = null;
+                        });
+                        
+                        const viewItem = document.createElement('div');
+                        viewItem.className = 'action-item view';
+                        viewItem.innerHTML = '<i class="fas fa-eye"></i> View';
+                        viewItem.addEventListener('click', () => {
+                            viewLinkDetails(link);
+                            actionMenu.classList.remove('active');
+                            currentLink = null;
+                        });
+                        
+                        const deleteItem = document.createElement('div');
+                        deleteItem.className = 'action-item delete';
+                        deleteItem.innerHTML = '<i class="fas fa-trash"></i> Delete';
+                        deleteItem.addEventListener('click', () => {
+                            if (confirm(`Are you sure you want to delete "${link.name}"?`)) {
+                                deleteLink(link.id);
+                            }
+                            actionMenu.classList.remove('active');
+                            currentLink = null;
+                        });
+                        
+                        actionMenu.appendChild(editItem);
+                        actionMenu.appendChild(viewItem);
+                        actionMenu.appendChild(deleteItem);
+                        
+                        // Show the menu
+                        actionMenu.classList.add('active');
+                    });
+                    
+                    linkCard.appendChild(linkInfo);
+                    linkCard.appendChild(linkActions);
+                    
+                    const visitBtn = document.createElement('button');
+                    visitBtn.className = 'visit-btn';
+                    visitBtn.innerHTML = '<i class="fas fa-external-link-alt"></i> Visit';
+                    visitBtn.addEventListener('click', () => {
+                        window.open(link.url, '_blank');
+                    });
+                    
+                    linkCard.appendChild(visitBtn);
+                    
+                    linksContainer.appendChild(linkCard);
+                });
+            }
+        }
+        
+        // Edit link function
+        function editLink(link) {
+            editId.value = link.id;
+            linkName.value = link.name;
+            linkDescription.value = link.description || '';
+            linkUrl.value = link.url;
+            saveBtnText.textContent = 'Update Link';
+            document.querySelector('.form h2').innerHTML = '<i class="fas fa-edit"></i> Edit Link';
+            formContainer.classList.add('active');
+            linkName.focus();
+        }
+        
+        // View link details function
+        function viewLinkDetails(link) {
+            viewName.textContent = link.name;
+            viewDescription.textContent = link.description || 'No description provided';
+            viewLink.textContent = link.url;
+            viewLink.href = link.url;
+            visitFromView.onclick = () => {
+                window.open(link.url, '_blank');
+                viewModal.classList.remove('active');
+            };
+            viewModal.classList.add('active');
+        }
+        
+        // Delete link function
+        function deleteLink(id) {
+            savedLinks = savedLinks.filter(link => link.id !== id);
+            localStorage.setItem('savedLinks', JSON.stringify(savedLinks));
+            displayLinks();
+            showSuccessMessage('Link deleted successfully!');
+        }
+        
+        // Show success message
+        function showSuccessMessage(message) {
+            const successMsg = document.createElement('div');
+            successMsg.textContent = `✓ ${message}`;
+            successMsg.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(45deg, #4facfe, #00f2fe);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                z-index: 1000;
+                font-weight: 500;
+                animation: slideIn 0.5s ease;
+            `;
+            document.body.appendChild(successMsg);
+            
+            setTimeout(() => {
+                successMsg.style.animation = 'slideOut 0.5s ease';
+                setTimeout(() => successMsg.remove(), 500);
+            }, 2000);
+            
+            // Add animations
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            setTimeout(() => style.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
